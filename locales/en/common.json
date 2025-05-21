@@ -1,0 +1,13 @@
+{
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "logout": "Logout",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "gender": "Gender",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  }
+  
