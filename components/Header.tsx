@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
+import Link from "next/link";
 
 interface HeaderProps {
   onToggle: () => void;
@@ -6,6 +9,10 @@ interface HeaderProps {
 
 export default function Header({ onToggle }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+  const router = useRouter();
+  const { t } = useTranslation("common");
+  const { locale, pathname, asPath, query } = router;
 
   useEffect(() => {
     setMounted(true);
@@ -14,6 +21,25 @@ export default function Header({ onToggle }: HeaderProps) {
     return () =>
       document.removeEventListener("toggleSidebar", handleToggleSidebar);
   }, [onToggle]);
+
+  // Close language menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".language-menu")) {
+        setIsLanguageMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLanguageChange = (newLocale: string) => {
+    const { pathname, asPath, query } = router;
+    router.push({ pathname, query }, asPath, { locale: newLocale });
+    setIsLanguageMenuOpen(false);
+  };
 
   if (!mounted) return null;
 
@@ -47,7 +73,7 @@ export default function Header({ onToggle }: HeaderProps) {
         <div className="flex-1 px-4 lg:px-0">
           <div className="max-w-lg w-full lg:max-w-xs">
             <label htmlFor="search" className="sr-only">
-              Search
+              {t("header.search.label")}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -70,7 +96,7 @@ export default function Header({ onToggle }: HeaderProps) {
                 id="search"
                 name="search"
                 className="block w-full pl-10 pr-3 py-2 border border-[#4f772d]/20 rounded-md leading-5 bg-white placeholder-[#132a13]/60 focus:outline-none focus:placeholder-[#132a13] focus:ring-1 focus:ring-[#4f772d] focus:border-[#4f772d] sm:text-sm"
-                placeholder="Search"
+                placeholder={t("header.search.placeholder")}
                 type="search"
               />
             </div>
@@ -78,13 +104,78 @@ export default function Header({ onToggle }: HeaderProps) {
         </div>
 
         {/* Right side buttons */}
-        <div className="flex items-center">
+        <div className="flex items-center space-x-4">
+          {/* Language Switcher */}
+          <div className="relative language-menu">
+            <button
+              type="button"
+              onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
+              className="flex items-center text-sm font-medium text-[#132a13] hover:text-[#4f772d] "
+            >
+              <span className="sr-only">{t("header.language.label")}</span>
+              <span className="uppercase">{locale}</span>
+              <svg
+                className={`ml-2 h-5 w-5 transition-transform duration-200 ${
+                  isLanguageMenuOpen ? "transform rotate-180" : ""
+                }`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+
+            {/* Language Dropdown Menu */}
+            {isLanguageMenuOpen && (
+              <div
+                className={`absolute ${
+                  locale === "ar" ? "left-0" : "right-0"
+                } mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50`}
+              >
+                <div
+                  className="py-1"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="language-menu"
+                >
+                  <button
+                    onClick={() => handleLanguageChange("en")}
+                    className={`${
+                      locale === "en"
+                        ? "bg-[#4f772d]/10 text-[#4f772d]"
+                        : "text-[#132a13] hover:bg-[#4f772d]/5"
+                    } block w-full text-left px-4 py-2 text-sm`}
+                    role="menuitem"
+                  >
+                    {t("header.language.en")}
+                  </button>
+                  <button
+                    onClick={() => handleLanguageChange("ar")}
+                    className={`${
+                      locale === "ar"
+                        ? "bg-[#4f772d]/10 text-[#4f772d]"
+                        : "text-[#132a13] hover:bg-[#4f772d]/5"
+                    } block w-full text-left px-4 py-2 text-sm`}
+                    role="menuitem"
+                  >
+                    {t("header.language.ar")}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Notifications */}
           <button
             type="button"
             className="p-1 text-[#132a13]/60 hover:text-[#4f772d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4f772d]"
           >
-            <span className="sr-only">View notifications</span>
+            <span className="sr-only">{t("header.notifications.label")}</span>
             <svg
               className="h-6 w-6"
               xmlns="http://www.w3.org/2000/svg"
@@ -102,12 +193,12 @@ export default function Header({ onToggle }: HeaderProps) {
           </button>
 
           {/* Profile dropdown */}
-          <div className="ml-3 relative">
+          <div className="relative">
             <button
               type="button"
               className="flex items-center max-w-xs text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4f772d]"
             >
-              <span className="sr-only">Open user menu</span>
+              <span className="sr-only">{t("header.profile.label")}</span>
               <div className="h-8 w-8 rounded-full bg-[#4f772d] flex items-center justify-center text-white">
                 <svg
                   className="h-5 w-5"

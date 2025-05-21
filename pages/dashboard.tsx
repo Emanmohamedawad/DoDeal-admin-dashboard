@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import type { AppDispatch, RootState } from "../store";
 import { fetchUsers, createUser, editUser } from "../store/userSlice";
 import Sidebar from "../components/Sidebar";
@@ -7,10 +9,12 @@ import Header from "../components/Header";
 import Modal from "../components/Modal";
 import Button from "../components/Button";
 import type { User } from "../store/userSlice";
+import type { GetStaticProps } from "next";
 
 const ITEMS_PER_PAGE = 3;
 
 export default function Dashboard() {
+  const { t } = useTranslation("common");
   const dispatch: AppDispatch = useDispatch();
   const users = useSelector((state: RootState) => state.users.list);
   const loading = useSelector((state: RootState) => state.users.loading);
@@ -68,13 +72,13 @@ export default function Dashboard() {
           <div className="container mx-auto px-6 py-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-semibold text-gray-800">
-                User Management
+                {t("dashboard.title")}
               </h2>
               <Button
                 onClick={handleOpenCreate}
                 className="rounded-[10px] p-2 border-b-2 border-[#4f772d] bg-[#4f772d] text-white"
               >
-                + Add New User
+                {t("dashboard.addUser")}
               </Button>
             </div>
 
@@ -83,7 +87,7 @@ export default function Dashboard() {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search by name..."
+                  placeholder={t("dashboard.search.placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-2 pl-10 text-sm border border-[#4f772d]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4f772d] focus:border-transparent"
@@ -114,7 +118,7 @@ export default function Dashboard() {
                 </div>
               ) : error ? (
                 <div className="flex justify-center items-center h-64 text-red-600">
-                  Error loading users: {error}
+                  {t("dashboard.table.error", { error })}
                 </div>
               ) : (
                 <>
@@ -123,16 +127,16 @@ export default function Dashboard() {
                       <thead className="bg-[#4f772d]/5">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#132a13] uppercase tracking-wider">
-                            ID
+                            {t("dashboard.table.id")}
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#132a13] uppercase tracking-wider">
-                            Name
+                            {t("dashboard.table.name")}
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#132a13] uppercase tracking-wider">
-                            Email
+                            {t("dashboard.table.email")}
                           </th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-[#132a13] uppercase tracking-wider">
-                            Actions
+                            {t("dashboard.table.actions")}
                           </th>
                         </tr>
                       </thead>
@@ -159,7 +163,7 @@ export default function Dashboard() {
                                 onClick={() => handleOpenEdit(user)}
                                 className="text-[#4f772d] hover:text-[#132a13] bg-transparent hover:bg-[#4f772d]/10 px-3 py-1 rounded-md"
                               >
-                                Edit
+                                {t("dashboard.table.edit")}
                               </Button>
                             </td>
                           </tr>
@@ -178,7 +182,7 @@ export default function Dashboard() {
                         disabled={currentPage === 1}
                         className="relative inline-flex items-center px-4 py-2 border border-[#4f772d]/20 text-sm font-medium rounded-md text-[#132a13] bg-white hover:bg-[#4f772d]/5 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Previous
+                        {t("dashboard.pagination.previous")}
                       </Button>
                       <Button
                         onClick={() =>
@@ -189,30 +193,30 @@ export default function Dashboard() {
                         disabled={currentPage === totalPages}
                         className="ml-3 relative inline-flex items-center px-4 py-2 border border-[#4f772d]/20 text-sm font-medium rounded-md text-[#132a13] bg-white hover:bg-[#4f772d]/5 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Next
+                        {t("dashboard.pagination.next")}
                       </Button>
                     </div>
                     <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                       <div>
                         <p className="text-sm text-[#132a13]">
-                          Showing{" "}
+                          {t("dashboard.pagination.showing")}{" "}
                           <span className="font-medium">
                             {filteredAndSortedUsers.length > 0
                               ? startIndex + 1
                               : 0}
                           </span>{" "}
-                          to{" "}
+                          {t("dashboard.pagination.to")}{" "}
                           <span className="font-medium">
                             {Math.min(
                               startIndex + ITEMS_PER_PAGE,
                               filteredAndSortedUsers.length
                             )}
                           </span>{" "}
-                          of{" "}
+                          {t("dashboard.pagination.of")}{" "}
                           <span className="font-medium">
                             {filteredAndSortedUsers.length}
                           </span>{" "}
-                          users
+                          {t("dashboard.pagination.users")}
                         </p>
                       </div>
                       <div>
@@ -230,7 +234,7 @@ export default function Dashboard() {
                             }
                             className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-[#4f772d]/20 bg-white text-sm font-medium text-[#132a13] hover:bg-[#4f772d]/5 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Previous
+                            {t("dashboard.pagination.previous")}
                           </Button>
                           {[...Array(Math.max(1, totalPages))].map(
                             (_, index) => (
@@ -264,7 +268,7 @@ export default function Dashboard() {
                             }
                             className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-[#4f772d]/20 bg-white text-sm font-medium text-[#132a13] hover:bg-[#4f772d]/5 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Next
+                            {t("dashboard.pagination.next")}
                           </Button>
                         </nav>
                       </div>
@@ -285,3 +289,11 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? "en", ["common"])),
+    },
+  };
+};

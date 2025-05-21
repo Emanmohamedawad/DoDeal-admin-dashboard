@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "next-i18next";
 import Image from "next/image";
 import Logo from "../assets/images/dodeal-white.png";
 import { logout } from "../store/authSlice";
@@ -11,14 +12,14 @@ interface SidebarProps {
 }
 
 interface NavItem {
-  name: string;
+  translationKey: string;
   path: string;
   icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
 }
 
 const navigation: NavItem[] = [
   {
-    name: "Dashboard",
+    translationKey: "dashboard",
     path: "/dashboard",
     icon: (props) => (
       <svg
@@ -42,6 +43,7 @@ const navigation: NavItem[] = [
 export default function Sidebar({ isOpen }: SidebarProps) {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { t } = useTranslation("common");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -82,7 +84,6 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       >
         {/* Logo */}
         <div className="flex items-center justify-center h-16 px-4 py-2 bg-[#4f772d]">
-          {/* <span className="text-xl font-semibold text-white">Do Deal</span> */}
           <Image src={Logo} alt="Logo" width={80} height={100} />
         </div>
 
@@ -93,7 +94,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
               const isActive = router.pathname === item.path;
               return (
                 <Link
-                  key={item.name}
+                  key={item.translationKey}
                   href={item.path}
                   className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
                     isActive
@@ -106,7 +107,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                       isActive ? "text-[#4f772d]" : "text-[#132a13]/60"
                     }`}
                   />
-                  {item.name}
+                  {t(`sidebar.${item.translationKey}`)}
                 </Link>
               );
             })}
@@ -130,7 +131,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              Logout
+              {t("sidebar.logout")}
             </button>
           </div>
         </nav>
@@ -157,9 +158,11 @@ export default function Sidebar({ isOpen }: SidebarProps) {
               </div>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-[#132a13]">Admin User</p>
+              <p className="text-sm font-medium text-[#132a13]">
+                {t("sidebar.userProfile.admin")}
+              </p>
               <p className="text-xs font-medium text-[#132a13]/60">
-                admin@example.com
+                {t("sidebar.userProfile.email")}
               </p>
             </div>
           </div>

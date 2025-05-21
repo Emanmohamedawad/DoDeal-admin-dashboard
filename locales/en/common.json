@@ -1,13 +1,61 @@
 {
-    "login": "Login",
+  "login": "Login",
+  "dashboard": {
+    "title": "User Management",
+    "addUser": "+ Add New User",
+    "search": {
+      "placeholder": "Search by name..."
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "actions": "Actions",
+      "edit": "Edit",
+      "loading": "Loading...",
+      "error": "Error loading users: {{error}}"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "users": "users"
+    }
+  },
+  "users": "Users",
+  "logout": "Logout",
+  "name": "Name",
+  "email": "Email",
+  "phone": "Phone",
+  "gender": "Gender",
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "sidebar": {
     "dashboard": "Dashboard",
-    "users": "Users",
     "logout": "Logout",
-    "name": "Name",
-    "email": "Email",
-    "phone": "Phone",
-    "gender": "Gender",
-    "submit": "Submit",
-    "cancel": "Cancel"
-  }
-  
+    "userProfile": {
+      "admin": "Admin User",
+      "email": "admin@example.com"
+    }
+  },
+  "header": {
+    "search": {
+      "placeholder": "Search",
+      "label": "Search"
+    },
+    "notifications": {
+      "label": "View notifications"
+    },
+    "profile": {
+      "label": "Open user menu"
+    },
+    "language": {
+      "label": "Change language",
+      "en": "English",
+      "ar": "Arabic"
+    }
+  },
+  "password": "Password"
+}

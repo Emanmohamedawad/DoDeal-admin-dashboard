@@ -1,13 +1,61 @@
 {
-    "login": "تسجيل الدخول",
+  "login": "تسجيل الدخول",
+  "dashboard": {
+    "title": "إدارة المستخدمين",
+    "addUser": "+ إضافة مستخدم جديد",
+    "search": {
+      "placeholder": "البحث بالاسم..."
+    },
+    "table": {
+      "id": "المعرف",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "actions": "الإجراءات",
+      "edit": "تعديل",
+      "loading": "جاري التحميل...",
+      "error": "خطأ في تحميل المستخدمين: {{error}}"
+    },
+    "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "showing": "عرض",
+      "to": "إلى",
+      "of": "من",
+      "users": "المستخدمين"
+    }
+  },
+  "users": "المستخدمين",
+  "logout": "تسجيل الخروج",
+  "name": "الاسم",
+  "email": "البريد الإلكتروني",
+  "phone": "الهاتف",
+  "gender": "الجنس",
+  "submit": "إرسال",
+  "cancel": "إلغاء",
+  "sidebar": {
     "dashboard": "لوحة التحكم",
-    "users": "المستخدمين",
     "logout": "تسجيل الخروج",
-    "name": "الاسم",
-    "email": "البريد الإلكتروني",
-    "phone": "الهاتف",
-    "gender": "الجنس",
-    "submit": "إرسال",
-    "cancel": "إلغاء"
-  }
-  
+    "userProfile": {
+      "admin": "مستخدم مسؤول",
+      "email": "admin@example.com"
+    }
+  },
+  "header": {
+    "search": {
+      "placeholder": "بحث",
+      "label": "بحث"
+    },
+    "notifications": {
+      "label": "عرض الإشعارات"
+    },
+    "profile": {
+      "label": "فتح قائمة المستخدم"
+    },
+    "language": {
+      "label": "تغيير اللغة",
+      "en": "الإنجليزية",
+      "ar": "العربية"
+    }
+  },
+  "password": "كلمة المرور"
+}
