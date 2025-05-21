@@ -2,6 +2,8 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import Image from "next/image";
+import Logo from "../assets/images/dodeal-white.png";
 import { logout } from "../store/authSlice";
 
 interface SidebarProps {
@@ -79,8 +81,9 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         }`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-center h-16 px-4 bg-[#4f772d]">
-          <span className="text-xl font-semibold text-white">Do Deal</span>
+        <div className="flex items-center justify-center h-16 px-4 py-2 bg-[#4f772d]">
+          {/* <span className="text-xl font-semibold text-white">Do Deal</span> */}
+          <Image src={Logo} alt="Logo" width={80} height={100} />
         </div>
 
         {/* Navigation */}
