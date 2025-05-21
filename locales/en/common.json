@@ -13,7 +13,8 @@
       "actions": "Actions",
       "edit": "Edit",
       "loading": "Loading...",
-      "error": "Error loading users: {{error}}"
+      "error": "Error loading users: {{error}}",
+      "view": "View Details"
     },
     "pagination": {
       "previous": "Previous",
@@ -24,14 +25,47 @@
       "users": "users"
     }
   },
-  "users": "Users",
-  "logout": "Logout",
-  "name": "Name",
-  "email": "Email",
-  "phone": "Phone",
-  "gender": "Gender",
-  "submit": "Submit",
-  "cancel": "Cancel",
+  "user": {
+    "usersdetails": "User Details",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "gender": "Gender",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "id": "ID",
+    "modal": {
+      "title": {
+        "create": "Create User",
+        "edit": "Edit User"
+      },
+      "form": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Enter name"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter email"
+        },
+        "phone": {
+          "label": "Phone",
+          "placeholder": "Enter phone number"
+        },
+        "gender": {
+          "label": "Gender",
+          "options": {
+            "male": "Male",
+            "female": "Female"
+          }
+        }
+      },
+      "validation": {
+        "required": "Name and Email are required."
+      }
+    }
+  },
+
   "sidebar": {
     "dashboard": "Dashboard",
     "logout": "Logout",

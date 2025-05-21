@@ -14,49 +14,91 @@ export default function UserDetail() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://mini-admin-portal.vercel.app/api/users/${id}`)
+        .get(`/api/users/${id}`)
         .then((res) => {
           setUser(res.data);
           setLoading(false);
         })
-        .catch(() => setLoading(false));
+        .catch((err) => {
+          setError(err.response?.data?.error || "Error loading user details");
+          setLoading(false);
+        });
     }
   }, [id]);
 
   return (
     <div className="flex">
       <Sidebar isOpen={sidebarOpen} />
-      <div className="flex-1 md:ml-64">
+      <div className="flex-1">
         <Header onToggle={() => setSidebarOpen(!sidebarOpen)} />
         <main className="p-6 bg-white min-h-screen">
-          <h2 className="text-2xl font-bold mb-4">{t("users")}</h2>
-          {loading ? (
-            <p>{t("dashboard.table.loading")}</p>
-          ) : user ? (
-            <div className="space-y-2">
-              <p>
-                <strong>{t("dashboard.table.id")}:</strong> {user.id}
-              </p>
-              <p>
-                <strong>{t("name")}:</strong> {user.name}
-              </p>
-              <p>
-                <strong>{t("email")}:</strong> {user.email}
-              </p>
-              <p>
-                <strong>{t("phone")}:</strong> {user.phone}
-              </p>
-              <p>
-                <strong>{t("gender")}:</strong> {user.gender}
-              </p>
+          <div className="max-w-4xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t("user.usersdetails")}
+              </h2>
+              <button
+                onClick={() => router.back()}
+                className="px-4 py-2 text-sm font-medium text-[#4f772d] hover:text-[#132a13] bg-transparent hover:bg-[#4f772d]/10 rounded-md"
+              >
+                {t("dashboard.pagination.previous")}
+              </button>
             </div>
-          ) : (
-            <p>{t("dashboard.table.error", { error: "User not found" })}</p>
-          )}
+
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4f772d]"></div>
+              </div>
+            ) : error ? (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+                {error}
+              </div>
+            ) : user ? (
+              <div className="bg-white shadow rounded-lg p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                      {t("user.id")}:
+                    </p>
+                    <p className="text-lg text-gray-900">{user.id}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                      {t("user.name")}:
+                    </p>
+                    <p className="text-lg text-gray-900">{user.name}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                      {t("user.email")}:
+                    </p>
+                    <p className="text-lg text-gray-900">{user.email}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                      {t("user.phone")}:
+                    </p>
+                    <p className="text-lg text-gray-900">{user.phone}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                      {t("user.gender")}:
+                    </p>
+                    <p className="text-lg text-gray-900">{user.gender}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 px-4 py-3 rounded-md">
+                {t("dashboard.table.error", { error: "User not found" })}
+              </div>
+            )}
+          </div>
         </main>
       </div>
     </div>
