@@ -8,10 +8,10 @@ const AUTH_HEADER = {
   },
 };
 
+const API_BASE_URL = "/api/proxy";
+
 export const fetchUsers = createAsyncThunk<User[]>("users/fetch", async () => {
-  const response = await axios.get<User[]>(
-    "https://mini-admin-portal.vercel.app/api/users"
-  );
+  const response = await axios.get<User[]>(`${API_BASE_URL}/users`);
   return response.data;
 });
 
@@ -19,7 +19,7 @@ export const createUser = createAsyncThunk<User, Omit<User, "id">>(
   "users/create",
   async (data) => {
     const response = await axios.post<User>(
-      "https://mini-admin-portal.vercel.app/api/users",
+      `${API_BASE_URL}/users`,
       data,
       AUTH_HEADER
     );
@@ -32,7 +32,7 @@ export const editUser = createAsyncThunk<
   { id: number; data: Partial<User> }
 >("users/edit", async ({ id, data }) => {
   const response = await axios.put<User>(
-    `https://mini-admin-portal.vercel.app/api/users/${id}`,
+    `${API_BASE_URL}/users/${id}`,
     data,
     AUTH_HEADER
   );
