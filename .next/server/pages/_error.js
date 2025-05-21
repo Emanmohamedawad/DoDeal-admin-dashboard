@@ -132,17 +132,6 @@ module.exports = require("react/jsx-runtime");
 
 /***/ }),
 
-/***/ "path":
-/*!***********************!*\
-  !*** external "path" ***!
-  \***********************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("path");
-
-/***/ }),
-
 /***/ "@reduxjs/toolkit":
 /*!***********************************!*\
   !*** external "@reduxjs/toolkit" ***!
@@ -173,6 +162,17 @@ module.exports = import("axios");;
 
 "use strict";
 module.exports = import("react-redux");;
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("path");
 
 /***/ })
 
