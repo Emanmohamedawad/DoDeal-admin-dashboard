@@ -6,6 +6,9 @@ import type { GetStaticProps } from "next";
 import { useState } from "react";
 import { login } from "../store/authSlice";
 
+const AUTH_TOKEN =
+  "Bearer eyJ0eXAiOiAiSldUIiwgInR5cGUiOiAiQmVhcmVyIiwgInZhbCI6ICIxMjM0NS1hYmNkLWVmZ2gtMTIzNC01Njc4OTAifQ==";
+
 export default function LoginPage() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -16,12 +19,14 @@ export default function LoginPage() {
 
   const handleLogin = (): void => {
     if (email === "admin@example.com" && password === "admin123") {
-      const token = "FAKE_TOKEN";
-      dispatch(login(token));
-      document.cookie = `token=${token}; path=/`;
+      dispatch(login(AUTH_TOKEN));
+      // Store the token in localStorage for persistence
+      localStorage.setItem("authToken", AUTH_TOKEN);
+      // Also set it in a cookie as backup
+      document.cookie = `token=${AUTH_TOKEN}; path=/`;
       router.push("/dashboard");
     } else {
-      setError("Invalid credentials. Please try again.");
+      setError(t("login.error.invalid"));
     }
   };
 

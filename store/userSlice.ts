@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "../utils/axios";
 
 const AUTH_HEADER = {
   headers: {
@@ -9,35 +9,6 @@ const AUTH_HEADER = {
 };
 
 const API_BASE_URL = "/api/proxy";
-
-export const fetchUsers = createAsyncThunk<User[]>("users/fetch", async () => {
-  const response = await axios.get<User[]>(`${API_BASE_URL}/users`);
-  return response.data;
-});
-
-export const createUser = createAsyncThunk<User, Omit<User, "id">>(
-  "users/create",
-  async (data) => {
-    const response = await axios.post<User>(
-      `${API_BASE_URL}/users`,
-      data,
-      AUTH_HEADER
-    );
-    return response.data;
-  }
-);
-
-export const editUser = createAsyncThunk<
-  User,
-  { id: number; data: Partial<User> }
->("users/edit", async ({ id, data }) => {
-  const response = await axios.put<User>(
-    `${API_BASE_URL}/users/${id}`,
-    data,
-    AUTH_HEADER
-  );
-  return response.data;
-});
 
 export interface User {
   id: number;
@@ -57,14 +28,67 @@ const initialState: UserState = {
   error: null,
 };
 
+export const fetchUsers = createAsyncThunk<User[]>(
+  "users/fetchUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get<User[]>(`${API_BASE_URL}/users`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to fetch users"
+      );
+    }
+  }
+);
+
+export const createUser = createAsyncThunk(
+  "users/createUser",
+  async (userData: Omit<User, "id">, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        `${API_BASE_URL}/users`,
+        userData
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to create user"
+      );
+    }
+  }
+);
+
+export const editUser = createAsyncThunk(
+  "users/editUser",
+  async (
+    { id, data }: { id: number; data: Omit<User, "id"> },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axiosInstance.put(
+        `${API_BASE_URL}/users/${id}`,
+        data
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.error || "Failed to edit user"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch Users
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
@@ -72,28 +96,33 @@ const userSlice = createSlice({
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload as string;
       })
+      // Create User
       .addCase(createUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(createUser.fulfilled, (state, action) => {
-        state.list.push(action.payload);
+        state.loading = false;
+        // Don't update the list here, we'll fetch fresh data
       })
       .addCase(createUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload as string;
       })
+      // Edit User
       .addCase(editUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(editUser.fulfilled, (state, action) => {
-        const idx = state.list.findIndex((u) => u.id === action.payload.id);
-        if (idx !== -1) state.list[idx] = action.payload;
+        state.loading = false;
+        // Don't update the list here, we'll fetch fresh data
       })
       .addCase(editUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload as string;
       });
   },
 });

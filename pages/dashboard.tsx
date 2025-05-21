@@ -41,13 +41,20 @@ export default function Dashboard() {
     setModalOpen(true);
   };
 
-  const handleSubmit = (form: Omit<User, "id">) => {
-    if (editData) {
-      dispatch(editUser({ id: editData.id, data: form }));
-    } else {
-      dispatch(createUser(form));
+  const handleSubmit = async (form: Omit<User, "id">) => {
+    try {
+      if (editData) {
+        await dispatch(editUser({ id: editData.id, data: form })).unwrap();
+      } else {
+        await dispatch(createUser(form)).unwrap();
+      }
+      // Refresh the user list after successful creation/edit
+      await dispatch(fetchUsers());
+      setModalOpen(false);
+    } catch (error: any) {
+      // Error is already handled in the Modal component
+      console.error("Error in dashboard:", error);
     }
-    setModalOpen(false);
   };
 
   const handleViewUser = (userId: number) => {

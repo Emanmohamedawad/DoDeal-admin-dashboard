@@ -1,5 +1,8 @@
 {
   "login": "Login",
+  "login.error": {
+    "invalid": "Invalid credentials. Please try again."
+  },
   "dashboard": {
     "title": "User Management",
     "addUser": "+ Add New User",
@@ -34,9 +37,13 @@
     "submit": "Submit",
     "cancel": "Cancel",
     "id": "ID",
+    "update": "Update User",
+    "submitting": "Updating...",
+    "createSuccess": "User created successfully!",
+    "updateSuccess": "User updated successfully!",
     "modal": {
       "title": {
-        "create": "Create User",
+        "create": "Create New User",
         "edit": "Edit User"
       },
       "form": {
@@ -61,7 +68,30 @@
         }
       },
       "validation": {
-        "required": "Name and Email are required."
+        "required": "Please fill in all required fields",
+        "name": {
+          "required": "Name is required",
+          "min": "Name must be at least 2 characters",
+          "max": "Name must not exceed 50 characters",
+          "format": "Name can only contain letters and spaces"
+        },
+        "email": {
+          "required": "Email is required",
+          "format": "Please enter a valid email address",
+          "min": "Email must be at least 5 characters",
+          "max": "Email must be less than 100 characters",
+          "duplicate": "This email address is already registered"
+        },
+        "phone": {
+          "required": "Phone number is required",
+          "format": "Please enter a valid phone number",
+          "min": "Phone number must be at least 10 digits",
+          "max": "Phone number must not exceed 15 digits"
+        },
+        "gender": {
+          "required": "Please select a gender",
+          "invalid": "Please select a valid gender"
+        }
       }
     }
   },
@@ -91,5 +121,12 @@
       "ar": "Arabic"
     }
   },
-  "password": "Password"
+  "password": "Password",
+  "error": {
+    "generic": "An error occurred. Please try again.",
+    "userNotFound": "User not found. The user may have been deleted.",
+    "network": "Network error. Please check your connection.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "refreshFailed": "Failed to refresh the user list. Please try refreshing the page."
+  }
 }

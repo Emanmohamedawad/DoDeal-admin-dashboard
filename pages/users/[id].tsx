@@ -3,33 +3,68 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import type { GetStaticProps } from "next";
-import axios from "axios";
+import axiosInstance from "../../utils/axios";
 import Header from "../../components/Header";
 import Sidebar from "../../components/Sidebar";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
 
 export default function UserDetail() {
   const router = useRouter();
   const { t } = useTranslation("common");
   const { id } = router.query;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) {
-      axios
-        .get(`/api/users/${id}`)
-        .then((res) => {
-          setUser(res.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.response?.data?.error || "Error loading user details");
-          setLoading(false);
-        });
+    const fetchUserDetails = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Use our proxy endpoint instead of calling the external API directly
+        const response = await axiosInstance.get<User>(`/api/users/${id}`);
+        setUser(response.data);
+      } catch (err: any) {
+        if (err.response) {
+          switch (err.response.status) {
+            case 401:
+              setError(t("error.unauthorized"));
+              break;
+            case 404:
+              setError(t("error.userNotFound"));
+              break;
+            default:
+              setError(err.response.data?.error || t("error.generic"));
+          }
+        } else if (err.request) {
+          setError(t("error.network"));
+        } else {
+          setError(t("error.generic"));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserDetails();
+  }, [id, t]);
+
+  // Redirect to login if no token is present
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/login");
     }
-  }, [id]);
+  }, [router]);
 
   return (
     <div className="flex">
@@ -79,23 +114,11 @@ export default function UserDetail() {
                     </p>
                     <p className="text-lg text-gray-900">{user.email}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
-                      {t("user.phone")}:
-                    </p>
-                    <p className="text-lg text-gray-900">{user.phone}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
-                      {t("user.gender")}:
-                    </p>
-                    <p className="text-lg text-gray-900">{user.gender}</p>
-                  </div>
                 </div>
               </div>
             ) : (
               <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 px-4 py-3 rounded-md">
-                {t("dashboard.table.error", { error: "User not found" })}
+                {t("error.userNotFound")}
               </div>
             )}
           </div>
