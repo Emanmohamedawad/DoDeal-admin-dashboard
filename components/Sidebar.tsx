@@ -78,7 +78,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -88,7 +88,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="px-4 py-4">
+        <nav className="px-4 py-4 flex-grow">
           <div className="space-y-1">
             {navigation.map((item) => {
               const isActive = router.pathname === item.path;
@@ -137,7 +137,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         </nav>
 
         {/* User Profile */}
-        <div className="absolute bottom-0 w-full p-4 border-t border-[#4f772d]/10">
+        <div className="w-full p-4 border-t border-[#4f772d]/10 mt-auto">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 rounded-full bg-[#4f772d] flex items-center justify-center text-white">

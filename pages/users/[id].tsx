@@ -67,62 +67,64 @@ export default function UserDetail() {
   }, [router]);
 
   return (
-    <div className="flex">
-      <Sidebar isOpen={sidebarOpen} />
-      <div className="flex-1">
-        <Header onToggle={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="p-6 bg-white min-h-screen">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
-                {t("user.usersdetails")}
-              </h2>
-              <button
-                onClick={() => router.back()}
-                className="px-4 py-2 text-sm font-medium text-[#4f772d] hover:text-[#132a13] bg-transparent hover:bg-[#4f772d]/10 rounded-md"
-              >
-                {t("dashboard.pagination.previous")}
-              </button>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="flex h-screen">
+        <Sidebar isOpen={sidebarOpen} />
+        <div className="flex-1 flex flex-col">
+          <Header onToggle={() => setSidebarOpen(!sidebarOpen)} />
+          <main className="flex-1 p-6 bg-white">
+            <div className="max-w-4xl mx-auto h-full">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {t("user.usersdetails")}
+                </h2>
+                <button
+                  onClick={() => router.back()}
+                  className="px-4 py-2 text-sm font-medium text-[#4f772d] hover:text-[#132a13] bg-transparent hover:bg-[#4f772d]/10 rounded-md"
+                >
+                  {t("dashboard.pagination.previous")}
+                </button>
+              </div>
 
-            {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4f772d]"></div>
-              </div>
-            ) : error ? (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-                {error}
-              </div>
-            ) : user ? (
-              <div className="bg-white shadow rounded-lg p-6 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
-                      {t("user.id")}:
-                    </p>
-                    <p className="text-lg text-gray-900">{user.id}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
-                      {t("user.name")}:
-                    </p>
-                    <p className="text-lg text-gray-900">{user.name}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-500 min-w-[80px]">
-                      {t("user.email")}:
-                    </p>
-                    <p className="text-lg text-gray-900">{user.email}</p>
+              {loading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4f772d]"></div>
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+                  {error}
+                </div>
+              ) : user ? (
+                <div className="bg-white shadow rounded-lg p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                        {t("user.id")}:
+                      </p>
+                      <p className="text-lg text-gray-900">{user.id}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                        {t("user.name")}:
+                      </p>
+                      <p className="text-lg text-gray-900">{user.name}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                        {t("user.email")}:
+                      </p>
+                      <p className="text-lg text-gray-900">{user.email}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 px-4 py-3 rounded-md">
-                {t("error.userNotFound")}
-              </div>
-            )}
-          </div>
-        </main>
+              ) : (
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 px-4 py-3 rounded-md">
+                  {t("error.userNotFound")}
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );

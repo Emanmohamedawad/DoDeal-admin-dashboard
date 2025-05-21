@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
 import axiosInstance from "../utils/axios";
 import Button from "./Button";
 import { UserFormData, validateUserForm } from "../utils/validation";
-import { fetchUsers } from "../store/userSlice";
 import type { AppDispatch } from "../store";
 
 interface Props {
@@ -26,7 +24,6 @@ export default function Modal({
   initialData,
 }: Props) {
   const { t } = useTranslation("common");
-  const dispatch = useDispatch<AppDispatch>();
   const [form, setForm] = useState<UserFormData>({
     name: "",
     email: "",
@@ -66,98 +63,82 @@ export default function Modal({
     }
   };
 
-  const refreshUserList = async () => {
-    try {
-      await dispatch(fetchUsers()).unwrap();
-    } catch (error) {
-      console.error("Error refreshing user list:", error);
-      toast.error(t("error.refreshFailed"));
-    }
-  };
-
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
+      setErrors({}); // Clear any previous errors
 
       // Validate form
       const validation = validateUserForm(form);
-
       if (!validation.success) {
-        // Convert validation errors to form errors
         const formErrors: FormErrors = {};
         validation.errors.forEach((err) => {
           formErrors[err.field] = err.message;
         });
         setErrors(formErrors);
-        toast.error(t("user.modal.validation.required"));
         return;
       }
 
-      // Submit form
-      let response;
+      // Check for duplicate email first
       try {
-        if (initialData?.id) {
-          response = await axiosInstance.put(
-            `/api/proxy/users/${initialData.id}`,
-            validation.data
-          );
-        } else {
-          response = await axiosInstance.post(
-            "/api/proxy/users",
-            validation.data
-          );
-        }
-
-        // Only proceed if the submission was successful
-        if (response.status === 200 || response.status === 201) {
-          // Show success message
-          toast.success(
-            initialData ? t("user.updateSuccess") : t("user.createSuccess")
-          );
-
-          // Call onSubmit
-          onSubmit(validation.data);
-
-          // Close modal first
-          onClose();
-
-          // Then refresh the list
-          await refreshUserList();
-        }
+        const checkResponse = await axiosInstance.post(
+          "/api/proxy/users/check-email",
+          { email: form.email }
+        );
       } catch (error: any) {
-        // Handle API errors
         const errorData = error.response?.data;
-
-        if (errorData?.details) {
-          // Handle validation errors from the API
-          const formErrors: FormErrors = {};
-          errorData.details.forEach((err: any) => {
-            formErrors[err.field] = err.message;
+        if (errorData?.error === "Email already exists") {
+          setErrors({
+            email: t("user.modal.validation.email.duplicate"),
           });
-          setErrors(formErrors);
-          // Show the first error message in the toast
-          if (errorData.details[0]) {
-            toast.error(errorData.details[0].message);
-          }
-        } else if (errorData?.error) {
-          // Handle general API errors
-          setErrors({ submit: errorData.error });
-          toast.error(errorData.error);
-        } else {
-          // Handle other errors
-          const errorMessage =
-            error.response?.data?.error || t("error.generic");
-          setErrors({ submit: errorMessage });
-          toast.error(errorMessage);
+          return; // Don't proceed with submission
         }
-        // Don't close the modal on error
-        return;
+      }
+
+      // If email check passes, proceed with form submission
+      let response;
+      if (initialData?.id) {
+        response = await axiosInstance.put(
+          `/api/proxy/users/${initialData.id}`,
+          validation.data
+        );
+      } else {
+        response = await axiosInstance.post(
+          "/api/proxy/users",
+          validation.data
+        );
+      }
+
+      // If we get here, the request was successful
+      if (response.status === 200 || response.status === 201) {
+        // Show success message
+        toast.success(
+          initialData ? t("user.updateSuccess") : t("user.createSuccess")
+        );
+
+        // Call onSubmit with the validated data
+        onSubmit(validation.data);
       }
     } catch (error: any) {
-      console.error("Form submission error:", error);
-      const errorMessage = error.response?.data?.error || t("error.generic");
-      setErrors({ submit: errorMessage });
-      toast.error(errorMessage);
+      console.error("Form submission error:", error.response?.data || error);
+
+      // Handle API errors
+      const errorData = error.response?.data;
+
+      if (errorData?.details) {
+        // Handle other validation errors from the API
+        const formErrors: FormErrors = {};
+        errorData.details.forEach((err: any) => {
+          formErrors[err.field] = err.message;
+        });
+        setErrors(formErrors);
+      } else if (errorData?.error) {
+        // Handle general API errors
+        setErrors({ submit: errorData.error });
+      } else {
+        // Handle other errors
+        setErrors({ submit: t("error.generic") });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -255,14 +236,14 @@ export default function Modal({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                {t("user.submitting")}
+                {t(
+                  initialData
+                    ? "user.button.loading.edit"
+                    : "user.button.loading.create"
+                )}
               </span>
             ) : (
-              t(
-                initialData
-                  ? "user.modal.submit.edit"
-                  : "user.modal.submit.create"
-              )
+              t(initialData ? "user.button.edit" : "user.button.create")
             )}
           </Button>
         </div>

@@ -41,16 +41,26 @@ export default function Dashboard() {
     setModalOpen(true);
   };
 
-  const handleSubmit = async (form: Omit<User, "id">) => {
+  const handleCreateClick = () => {
+    router.push("/create-user");
+  };
+
+  const handleEditSubmit = async (form: Omit<User, "id">) => {
     try {
-      if (editData) {
-        await dispatch(editUser({ id: editData.id, data: form })).unwrap();
-      } else {
-        await dispatch(createUser(form)).unwrap();
-      }
-      // Refresh the user list after successful creation/edit
-      await dispatch(fetchUsers());
+      if (!editData) return;
+
+      // Edit the user
+      await dispatch(editUser({ id: editData.id, data: form })).unwrap();
+
+      // Close modal and reset edit data
       setModalOpen(false);
+      setEditData(null);
+
+      // Reset to first page
+      setCurrentPage(1);
+
+      // Refresh the user list
+      await dispatch(fetchUsers()).unwrap();
     } catch (error: any) {
       // Error is already handled in the Modal component
       console.error("Error in dashboard:", error);
@@ -88,10 +98,10 @@ export default function Dashboard() {
                 {t("dashboard.title")}
               </h2>
               <Button
-                onClick={handleOpenCreate}
-                className="rounded-[10px] p-2 border-b-2 border-[#4f772d] bg-[#4f772d] text-white"
+                onClick={handleCreateClick}
+                className="bg-[#4f772d] text-white hover:bg-[#132a13] border-0 rounded-md px-4 py-2"
               >
-                {t("dashboard.addUser")}
+                {t("user.create")}
               </Button>
             </div>
 
@@ -321,12 +331,17 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleSubmit}
-        initialData={editData}
-      />
+      {modalOpen && (
+        <Modal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setEditData(null);
+          }}
+          onSubmit={handleEditSubmit}
+          initialData={editData}
+        />
+      )}
     </div>
   );
 }
