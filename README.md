@@ -1,63 +1,71 @@
-📊 DoDeal Admin Dashboard
-A modern, responsive admin dashboard built with Next.js, TypeScript, Tailwind CSS, Redux Toolkit, and React Toastify.
-Designed to manage users with CRUD functionality, modal forms, toast notifications, and internationalization (i18n) support.
+# DoDeal Admin Dashboard
 
-🚀 Features
-⚙️ Next.js 13+ with App Router
+A modern, responsive admin dashboard built with **Next.js**, **TypeScript**, **Tailwind CSS**, **Redux Toolkit**, and **React Toastify**. Designed to manage users with **CRUD functionality**, modal forms, toast notifications, and internationalization (i18n) support.
 
-🎨 Tailwind CSS for fast styling
+## 🚀 Features
 
-💼 Redux Toolkit for state management
+- ⚙️ **Next.js 13+** with App Router
+- 🎨 **Tailwind CSS** for fast styling
+- 💼 **Redux Toolkit** for state management
+- 🌍 **i18n** with `next-i18next`
+- ✅ Form validation + error handling
+- 🔔 Toast notifications
+- 🧑 User management (create/edit/delete)
+- 📱 Fully responsive UI
 
-🌍 i18n with next-i18next
+## 🛠️ Tech Stack
 
-✅ Form validation + error handling
+- **Framework**: Next.js (TypeScript)
+- **Styling**: Tailwind CSS
+- **State Management**: Redux Toolkit
+- **API Layer**: Axios
+- **UI Components**: Custom + Headless UI (optional)
+- **i18n**: `next-i18next`
 
-🔔 Toast notifications
+## 📦 Getting Started
 
-🧑 User management (create/edit/delete)
+### 1️⃣ Clone the Repository
 
-📱 Fully responsive UI
-
-🛠️ Tech Stack
-Framework: Next.js (TypeScript)
-
-Styling: Tailwind CSS
-
-State Management: Redux Toolkit
-
-API Layer: Axios
-
-UI Components: Custom + Headless UI (optional)
-
-i18n: next-i18next
-
-📦 Getting Started
-1️⃣ Clone the Repository
-
+```bash
 git clone https://github.com/Emanmohamedawad/DoDeal-admin-dashboard.git
+cd DoDeal-admin-dashboard
+```
 
-2️⃣ Install Dependencies
+### 2️⃣ Install Dependencies
+
 Using npm:
 
+```bash
 npm install
+```
 
-3️⃣ Run the Development Server
+Or using yarn:
 
+```bash
+yarn install
+```
+
+### 3️⃣ Run the Development Server
+
+```bash
 npm run dev
+```
 
-Then open http://localhost:3000 in your browser.
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-🧪 Scripts
-Command	Description
-npm run dev	Run development server
-npm run build	Build for production
-npm start	Start production server
-npm run lint	Run ESLint checks
-npm run format	Format code with Prettier
+## 🧪 Scripts
 
-📁 Project Structure
+| Command          | Description                     |
+|------------------|---------------------------------|
+| `npm run dev`    | Run development server          |
+| `npm run build`  | Build for production            |
+| `npm run start`  | Start production server         |
+| `npm run lint`   | Run ESLint checks               |
+| `npm run format` | Format code with Prettier       |
 
+## 📁 Project Structure
+
+```bash
 .
 ├── components/         # Reusable UI components
 ├── pages/              # Next.js pages
@@ -67,12 +75,24 @@ npm run format	Format code with Prettier
 ├── public/             # Static assets
 ├── locales/            # i18n translation files
 └── ...
-🌍 Internationalization
-Configured with next-i18next
+```
 
-Default language: en
+## 🌍 Internationalization
 
+Configured with `next-i18next`.
 
-📬 Contact
-Made by Eman Mohamed
-Feel free to contribute or suggest improvements via issues!
+- **Default language**: `en`
+- Add translations in `public/locales/{lang}/common.json`
+
+## 🧩 Environment Variables (Optional)
+
+Create a `.env.local` file if needed for external APIs.
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+```
+
+## 📬 Contact
+
+Made by **Eman Mohamed**.  
+Feel free to contribute or suggest improvements via [issues](https://github.com/Emanmohamedawad/DoDeal-admin-dashboard/issues)!
