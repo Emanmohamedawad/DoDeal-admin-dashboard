@@ -6,6 +6,7 @@ import type { GetStaticProps } from "next";
 import { useState } from "react";
 import { login } from "../store/authSlice";
 
+//our custom auth token
 const AUTH_TOKEN =
   "Bearer eyJ0eXAiOiAiSldUIiwgInR5cGUiOiAiQmVhcmVyIiwgInZhbCI6ICIxMjM0NS1hYmNkLWVmZ2gtMTIzNC01Njc4OTAifQ==";
 

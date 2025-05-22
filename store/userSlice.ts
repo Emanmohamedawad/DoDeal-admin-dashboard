@@ -68,9 +68,16 @@ export const editUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      const updateData = {
+        name: data.name,
+        email: data.email,
+        gender: data.gender,
+        phone: data.phone,
+      };
+
       const response = await axiosInstance.put(
         `${API_BASE_URL}/users/${id}`,
-        data
+        updateData
       );
       return response.data;
     } catch (error: any) {

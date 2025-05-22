@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import type { AppDispatch, RootState } from "../store";
 import { fetchUsers, createUser, editUser } from "../store/userSlice";
 import Sidebar from "../components/Sidebar";
@@ -41,8 +43,25 @@ export default function Dashboard() {
     setModalOpen(true);
   };
 
-  const handleCreateClick = () => {
-    router.push("/create-user");
+  const handleCreateSubmit = async (form: Omit<User, "id">) => {
+    try {
+      // Create the user
+      await dispatch(createUser(form)).unwrap();
+
+      // Show success message
+      toast.success(t("user.createSuccess"));
+
+      // Reset to first page
+      setCurrentPage(1);
+
+      // Refresh the user list
+      await dispatch(fetchUsers()).unwrap();
+    } catch (error: any) {
+      // Error is handled in the Modal component and does not reach here for specific validation errors
+      console.error("Error in dashboard create submit:", error);
+      // We might still get other API errors here (e.g., network issue after validation)
+      // The modal should handle showing these errors at the top.
+    }
   };
 
   const handleEditSubmit = async (form: Omit<User, "id">) => {
@@ -52,9 +71,8 @@ export default function Dashboard() {
       // Edit the user
       await dispatch(editUser({ id: editData.id, data: form })).unwrap();
 
-      // Close modal and reset edit data
-      setModalOpen(false);
-      setEditData(null);
+      // Show success message
+      toast.success(t("user.updateSuccess"));
 
       // Reset to first page
       setCurrentPage(1);
@@ -62,9 +80,17 @@ export default function Dashboard() {
       // Refresh the user list
       await dispatch(fetchUsers()).unwrap();
     } catch (error: any) {
-      // Error is already handled in the Modal component
-      console.error("Error in dashboard:", error);
+      // Error is handled in the Modal component and does not reach here for specific validation errors
+      console.error("Error in dashboard edit submit:", error);
+      // We might still get other API errors here
     }
+  };
+
+  const handleModalClose = async () => {
+    console.log("Modal closed after successful submission.");
+    setModalOpen(false);
+    setEditData(null);
+    await dispatch(fetchUsers()).unwrap();
   };
 
   const handleViewUser = (userId: number) => {
@@ -78,6 +104,11 @@ export default function Dashboard() {
     )
     .sort((a: User, b: User) => a.id - b.id);
 
+  // Check if the current error message is the email duplicate error
+  const isEmailDuplicateError = error?.includes(
+    t("user.modal.validation.email.duplicate")
+  );
+
   // Calculate pagination using the sorted and filtered users
   const totalPages = Math.ceil(filteredAndSortedUsers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -88,6 +119,18 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Sidebar isOpen={sidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header onToggle={() => setSidebarOpen(!sidebarOpen)} />
@@ -98,10 +141,24 @@ export default function Dashboard() {
                 {t("dashboard.title")}
               </h2>
               <Button
-                onClick={handleCreateClick}
-                className="bg-[#4f772d] text-white hover:bg-[#132a13] border-0 rounded-md px-4 py-2"
+                onClick={handleOpenCreate}
+                className="bg-[#4f772d] text-white hover:bg-[#132a13] border-0 rounded-md px-4 py-2 flex items-center gap-2"
               >
-                {t("user.create")}
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                {t("dashboard.addUser")}
               </Button>
             </div>
 
@@ -139,9 +196,13 @@ export default function Dashboard() {
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4f772d]"></div>
                 </div>
-              ) : error ? (
-                <div className="flex justify-center items-center h-64 text-red-600">
-                  {t("dashboard.table.error", { error })}
+              ) : filteredAndSortedUsers.length === 0 && searchTerm === "" ? (
+                <div className="flex justify-center items-center h-64 text-gray-600">
+                  {t("dashboard.table.noUsers")}
+                </div>
+              ) : filteredAndSortedUsers.length === 0 && searchTerm !== "" ? (
+                <div className="flex justify-center items-center h-64 text-gray-600">
+                  {t("dashboard.table.noUsers")}
                 </div>
               ) : (
                 <>
@@ -195,7 +256,6 @@ export default function Dashboard() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-[#132a13]/80">
                                 {user.gender == null ? "_" : user.gender}
-                               
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -351,11 +411,7 @@ export default function Dashboard() {
       {modalOpen && (
         <Modal
           isOpen={modalOpen}
-          onClose={() => {
-            setModalOpen(false);
-            setEditData(null);
-          }}
-          onSubmit={handleEditSubmit}
+          onClose={handleModalClose}
           initialData={editData}
         />
       )}

@@ -5,25 +5,27 @@ import axiosInstance from "../utils/axios";
 import Button from "./Button";
 import { UserFormData, validateUserForm } from "../utils/validation";
 import type { AppDispatch } from "../store";
+import { useDispatch } from "react-redux";
+import { createUser, editUser } from "../store/userSlice";
+import type { User } from "../store/userSlice";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (form: UserFormData) => void;
-  initialData?: UserFormData & { id?: number };
+  initialData?: User & { id?: number };
 }
 
 interface FormErrors {
   [key: string]: string;
 }
 
-export default function Modal({
-  isOpen,
-  onClose,
-  onSubmit,
-  initialData,
-}: Props) {
+interface EmailCheckResponse {
+  exists: boolean;
+}
+
+export default function Modal({ isOpen, onClose, initialData }: Props) {
   const { t } = useTranslation("common");
+  const dispatch = useDispatch<AppDispatch>();
   const [form, setForm] = useState<UserFormData>({
     name: "",
     email: "",
@@ -32,17 +34,12 @@ export default function Modal({
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
-      setForm({
-        name: initialData.name,
-        email: initialData.email,
-        gender: initialData.gender || "male",
-        phone: initialData.phone || "",
-      });
+      setForm(initialData as UserFormData);
     } else {
-      // Reset form when opening for new user
       setForm({
         name: "",
         email: "",
@@ -50,8 +47,8 @@ export default function Modal({
         phone: "",
       });
     }
-    // Reset errors when modal opens/closes
     setErrors({});
+    setApiError(null);
   }, [initialData, isOpen]);
 
   const handleChange = (
@@ -59,7 +56,6 @@ export default function Modal({
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear error for the field being changed
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -67,51 +63,46 @@ export default function Modal({
         return newErrors;
       });
     }
+    setApiError(null);
   };
 
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
-      setErrors({}); // Clear any previous errors
+      setErrors({});
+      setApiError(null);
 
-      // Validate form
       const validation = validateUserForm(form);
       if (!validation.success) {
         const formErrors: FormErrors = {};
         validation.errors.forEach((err) => {
-          formErrors[err.field] = err.message;
+          formErrors[err.field] = t(
+            `user.modal.validation.${err.field}.${err.message}`
+          );
         });
         setErrors(formErrors);
         return;
       }
 
-      // If email check passes (or if editing), proceed with form submission
-      let response;
       if (initialData?.id) {
-        response = await axiosInstance.put(
-          `/api/proxy/users/${initialData.id}`,
-          validation.data
-        );
+        await dispatch(
+          editUser({
+            id: initialData.id,
+            data: validation.data as Omit<User, "id">,
+          })
+        ).unwrap();
+        toast.success(t("user.updateSuccess"));
       } else {
-        response = await axiosInstance.post(
-          "/api/proxy/users",
-          validation.data
-        );
+        await dispatch(
+          createUser(validation.data as Omit<User, "id">)
+        ).unwrap();
+        toast.success(t("user.createSuccess"));
       }
 
-      // If we get here, the request was successful
-      if (response.status === 200 || response.status === 201) {
-        // Show success message
-        toast.success(
-          initialData ? t("user.updateSuccess") : t("user.createSuccess")
-        );
-
-        // Call onSubmit with the validated data
-        onSubmit(validation.data);
-      }
+      onClose();
     } catch (error: any) {
       console.error("Form submission error:", error);
-      setErrors({ submit: error.response?.data?.error || error.message });
+        setApiError(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -122,11 +113,55 @@ export default function Modal({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">
-          {initialData
-            ? t("user.modal.title.edit")
-            : t("user.modal.title.create")}
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">
+            {initialData
+              ? t("user.modal.title.edit")
+              : t("user.modal.title.create")}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500"
+          >
+            <svg
+              className="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {apiError && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-red-800">{apiError}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-4">
           <div>
@@ -221,12 +256,12 @@ export default function Modal({
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="bg-[#4f772d] text-white hover:bg-[#132a13] disabled:opacity-50 border-0 rounded-md p-2"
+            className="bg-[#4f772d] text-white hover:bg-[#132a13] disabled:opacity-50 border-0 rounded-md p-2 flex items-center gap-2"
           >
             {isSubmitting ? (
-              <span className="flex items-center">
+              <>
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  className="animate-spin h-4 w-4 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -250,9 +285,42 @@ export default function Modal({
                     ? "user.button.loading.edit"
                     : "user.button.loading.create"
                 )}
-              </span>
+              </>
             ) : (
-              t(initialData ? "user.button.edit" : "user.button.create")
+              <>
+                {initialData ? (
+                  <svg
+                    className="h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                )}
+                {t(initialData ? "user.button.edit" : "user.button.create")}
+              </>
             )}
           </Button>
         </div>

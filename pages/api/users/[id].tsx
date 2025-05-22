@@ -1,9 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
+interface UserResponse {
+  id: string;
+  gender?: string;
+  phone?: string;
+  [key: string]: any; // Allow other fields
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<UserResponse | { error: string }>
 ) {
   const { id } = req.query;
 
@@ -15,7 +22,7 @@ export default async function handler(
   }
 
   try {
-    const response = await axios.get(
+    const response = await axios.get<UserResponse>(
       `https://mini-admin-portal.vercel.app/api/users/${id}`,
       {
         headers: {
@@ -25,8 +32,16 @@ export default async function handler(
       }
     );
 
+    // Extract the relevant fields from the response
+    const userData = {
+      id: response.data.id,
+      gender: response.data.gender,
+      phone: response.data.phone,
+      ...response.data, // Include all other fields
+    };
+
     // Forward the response data
-    res.status(200).json(response.data);
+    res.status(200).json(userData);
   } catch (error: any) {
     // Handle different types of errors
     if (error.response) {

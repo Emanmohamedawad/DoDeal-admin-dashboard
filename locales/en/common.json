@@ -5,7 +5,7 @@
   },
   "dashboard": {
     "title": "User Management",
-    "addUser": "+ Add New User",
+    "addUser": "Add New User",
     "create": "Create User",
     "search": {
       "placeholder": "Search by name..."

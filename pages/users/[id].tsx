@@ -11,6 +11,8 @@ interface User {
   id: number;
   name: string;
   email: string;
+  gender?: string;
+  phone?: string;
 }
 
 export default function UserDetail() {
@@ -107,13 +109,33 @@ export default function UserDetail() {
                       <p className="text-sm font-medium text-gray-500 min-w-[80px]">
                         {t("user.name")}:
                       </p>
-                      <p className="text-lg text-gray-900">{user.name}</p>
+                      <p className="text-lg text-gray-900">
+                        {user.name === null ? "null" : user.name || "_"}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-medium text-gray-500 min-w-[80px]">
                         {t("user.email")}:
                       </p>
-                      <p className="text-lg text-gray-900">{user.email}</p>
+                      <p className="text-lg text-gray-900">
+                        {user.email === null ? "null" : user.email || "_"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                        {t("user.phone")}:
+                      </p>
+                      <p className="text-lg text-gray-900">
+                        {user.phone === null ? "null" : user.phone || "_"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-500 min-w-[80px]">
+                        {t("user.gender")}:
+                      </p>
+                      <p className="text-lg text-gray-900">
+                        {user.gender === null ? "null" : user.gender || "_"}
+                      </p>
                     </div>
                   </div>
                 </div>
