@@ -74,15 +74,7 @@ Configured with next-i18next
 
 Default language: en
 
-Add translations in public/locales/{lang}/common.json
 
-🧩 Environment Variables (Optional)
-Create a .env.local file if needed for external APIs.
-
-env
-Copy
-Edit
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
 📬 Contact
 Made by Eman Mohamed
 Feel free to contribute or suggest improvements via issues!
