@@ -28,7 +28,6 @@ A modern, responsive admin dashboard built with **Next.js**, **TypeScript**, **T
 
 ```bash
 git clone https://github.com/Emanmohamedawad/DoDeal-admin-dashboard.git
-cd DoDeal-admin-dashboard
 ```
 
 ### 2️⃣ Install Dependencies
@@ -82,15 +81,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 Configured with `next-i18next`.
 
 - **Default language**: `en`
-- Add translations in `public/locales/{lang}/common.json`
 
-## 🧩 Environment Variables (Optional)
-
-Create a `.env.local` file if needed for external APIs.
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
 
 ## 📬 Contact
 
