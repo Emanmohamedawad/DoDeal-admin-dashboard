@@ -57,9 +57,7 @@ npm run lint	Run ESLint checks
 npm run format	Format code with Prettier
 
 📁 Project Structure
-bash
-Copy
-Edit
+
 .
 ├── components/         # Reusable UI components
 ├── pages/              # Next.js pages
