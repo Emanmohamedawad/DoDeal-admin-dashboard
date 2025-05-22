@@ -14,12 +14,22 @@
       "id": "ID",
       "name": "Name",
       "email": "Email",
+      "phone": "Phone Number",
+      "gender": "Gender",
       "actions": "Actions",
       "edit": "Edit",
       "loading": "Loading...",
       "error": "Error loading users: {{error}}",
       "view": "View Details",
-      "noUsers": "No users found"
+      "noUsers": "No users found",
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "gender": "Gender",
+        "actions": "Actions"
+      }
     },
     "pagination": {
       "previous": "Previous",
@@ -60,11 +70,12 @@
           "placeholder": "Enter email"
         },
         "phone": {
-          "label": "Phone",
-          "placeholder": "Enter phone number"
+          "label": "Phone Number",
+          "placeholder": "Enter phone number (e.g., 1234567890)"
         },
         "gender": {
           "label": "Gender",
+          "placeholder": "Select gender",
           "options": {
             "male": "Male",
             "female": "Female"
@@ -97,13 +108,13 @@
         },
         "phone": {
           "required": "Phone number is required",
-          "format": "Please enter a valid phone number",
+          "format": "Please enter a valid phone number (numbers only)",
           "min": "Phone number must be at least 10 digits",
           "max": "Phone number must not exceed 15 digits"
         },
         "gender": {
           "required": "Please select a gender",
-          "invalid": "Please select a valid gender"
+          "invalid": "Please select a valid gender (male or female)"
         }
       }
     },

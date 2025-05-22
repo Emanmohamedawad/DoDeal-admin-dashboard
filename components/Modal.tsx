@@ -27,6 +27,8 @@ export default function Modal({
   const [form, setForm] = useState<UserFormData>({
     name: "",
     email: "",
+    gender: "male",
+    phone: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,12 +38,16 @@ export default function Modal({
       setForm({
         name: initialData.name,
         email: initialData.email,
+        gender: initialData.gender || "male",
+        phone: initialData.phone || "",
       });
     } else {
       // Reset form when opening for new user
       setForm({
         name: "",
         email: "",
+        gender: "male",
+        phone: "",
       });
     }
     // Reset errors when modal opens/closes
@@ -79,23 +85,7 @@ export default function Modal({
         return;
       }
 
-      // Check for duplicate email first
-      try {
-        const checkResponse = await axiosInstance.post(
-          "/api/proxy/users/check-email",
-          { email: form.email }
-        );
-      } catch (error: any) {
-        const errorData = error.response?.data;
-        if (errorData?.error === "Email already exists") {
-          setErrors({
-            email: t("user.modal.validation.email.duplicate"),
-          });
-          return; // Don't proceed with submission
-        }
-      }
-
-      // If email check passes, proceed with form submission
+      // If email check passes (or if editing), proceed with form submission
       let response;
       if (initialData?.id) {
         response = await axiosInstance.put(
@@ -120,25 +110,8 @@ export default function Modal({
         onSubmit(validation.data);
       }
     } catch (error: any) {
-      console.error("Form submission error:", error.response?.data || error);
-
-      // Handle API errors
-      const errorData = error.response?.data;
-
-      if (errorData?.details) {
-        // Handle other validation errors from the API
-        const formErrors: FormErrors = {};
-        errorData.details.forEach((err: any) => {
-          formErrors[err.field] = err.message;
-        });
-        setErrors(formErrors);
-      } else if (errorData?.error) {
-        // Handle general API errors
-        setErrors({ submit: errorData.error });
-      } else {
-        // Handle other errors
-        setErrors({ submit: t("error.generic") });
-      }
+      console.error("Form submission error:", error);
+      setErrors({ submit: error.response?.data?.error || error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -154,13 +127,6 @@ export default function Modal({
             ? t("user.modal.title.edit")
             : t("user.modal.title.create")}
         </h2>
-
-        {/* Show general submission error if any */}
-        {errors.submit && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{errors.submit}</p>
-          </div>
-        )}
 
         <div className="space-y-4">
           <div>
@@ -197,6 +163,49 @@ export default function Modal({
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t("user.modal.form.phone.label")}
+            </label>
+            <input
+              name="phone"
+              type="tel"
+              className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-[#4f772d] focus:border-[#4f772d] ${
+                errors.phone ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder={t("user.modal.form.phone.placeholder")}
+              value={form.phone}
+              onChange={handleChange}
+            />
+            {errors.phone && (
+              <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t("user.modal.form.gender.label")}
+            </label>
+            <select
+              name="gender"
+              className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-[#4f772d] focus:border-[#4f772d] ${
+                errors.gender ? "border-red-500" : "border-gray-300"
+              }`}
+              value={form.gender}
+              onChange={handleChange}
+            >
+              <option value="male">
+                {t("user.modal.form.gender.options.male")}
+              </option>
+              <option value="female">
+                {t("user.modal.form.gender.options.female")}
+              </option>
+            </select>
+            {errors.gender && (
+              <p className="mt-1 text-sm text-red-600">{errors.gender}</p>
             )}
           </div>
         </div>

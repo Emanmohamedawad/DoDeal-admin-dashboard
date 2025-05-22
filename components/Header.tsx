@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
-import Link from "next/link";
+
 
 interface HeaderProps {
   onToggle: () => void;
@@ -14,6 +14,8 @@ export default function Header({ onToggle }: HeaderProps) {
   const { t } = useTranslation("common");
   const { locale, pathname, asPath, query } = router;
 
+  // Set mounted to true after the component mounts
+  // This is to prevent server-side rendering issues with Next.js
   useEffect(() => {
     setMounted(true);
     const handleToggleSidebar = () => onToggle();
@@ -68,17 +70,17 @@ export default function Header({ onToggle }: HeaderProps) {
             />
           </svg>
         </button>
-
-        {/* Search */}
+        {/* Profile dropdown */}
         <div className="flex-1 px-4 lg:px-0">
-          <div className="max-w-lg w-full lg:max-w-xs">
-            <label htmlFor="search" className="sr-only">
-              {t("header.search.label")}
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="relative">
+            <button
+              type="button"
+              className="flex items-center max-w-xs text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4f772d]"
+            >
+              <span className="sr-only">{t("header.profile.label")}</span>
+              <div className="h-8 w-8 rounded-full bg-[#4f772d] flex items-center justify-center text-white">
                 <svg
-                  className="h-5 w-5 text-[#132a13]/60"
+                  className="h-5 w-5"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -88,21 +90,13 @@ export default function Header({ onToggle }: HeaderProps) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
               </div>
-              <input
-                id="search"
-                name="search"
-                className="block w-full pl-10 pr-3 py-2 border border-[#4f772d]/20 rounded-md leading-5 bg-white placeholder-[#132a13]/60 focus:outline-none focus:placeholder-[#132a13] focus:ring-1 focus:ring-[#4f772d] focus:border-[#4f772d] sm:text-sm"
-                placeholder={t("header.search.placeholder")}
-                type="search"
-              />
-            </div>
+            </button>
           </div>
         </div>
-
         {/* Right side buttons */}
         <div className="flex items-center space-x-4">
           {/* Language Switcher */}
@@ -169,7 +163,6 @@ export default function Header({ onToggle }: HeaderProps) {
               </div>
             )}
           </div>
-
           {/* Notifications */}
           <button
             type="button"
@@ -191,32 +184,6 @@ export default function Header({ onToggle }: HeaderProps) {
               />
             </svg>
           </button>
-
-          {/* Profile dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              className="flex items-center max-w-xs text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4f772d]"
-            >
-              <span className="sr-only">{t("header.profile.label")}</span>
-              <div className="h-8 w-8 rounded-full bg-[#4f772d] flex items-center justify-center text-white">
-                <svg
-                  className="h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-              </div>
-            </button>
-          </div>
         </div>
       </div>
     </header>

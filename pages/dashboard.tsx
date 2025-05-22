@@ -158,6 +158,12 @@ export default function Dashboard() {
                           <th className="px-6 py-3 text-left text-xs font-medium text-[#132a13] uppercase tracking-wider">
                             {t("dashboard.table.email")}
                           </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#132a13] uppercase tracking-wider">
+                            {t("dashboard.table.phone")}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#132a13] uppercase tracking-wider">
+                            {t("dashboard.table.gender")}
+                          </th>
                           <th className="px-6 py-3 text-right text-xs font-medium text-[#132a13] uppercase tracking-wider">
                             {t("dashboard.table.actions")}
                           </th>
@@ -179,6 +185,17 @@ export default function Dashboard() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-[#132a13]/80">
                                 {user.email}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-[#132a13]/80">
+                                {user.phone == null ? "_" : user.phone}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-[#132a13]/80">
+                                {user.gender == null ? "_" : user.gender}
+                               
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

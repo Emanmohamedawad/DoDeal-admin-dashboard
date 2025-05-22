@@ -26,6 +26,8 @@ export default function CreateUser() {
   const [form, setForm] = useState<UserFormData>({
     name: "",
     email: "",
+    gender: "male",
+    phone: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,34 +78,15 @@ export default function CreateUser() {
       // Redirect back to dashboard
       router.push("/dashboard");
     } catch (error: any) {
-      console.error("Form submission error:", error.response?.data || error);
-
-      if (error.response?.data?.details) {
-        const formErrors: FormErrors = {};
-        error.response.data.details.forEach((err: any) => {
-          formErrors[err.field] = err.message;
-        });
-        setErrors(formErrors);
-      } else if (error.response?.data?.error) {
-        setErrors({ submit: error.response.data.error });
-      } else if (error.code === "ECONNREFUSED" || error.code === "ENOTFOUND") {
-        setErrors({ submit: t("error.connection.refused") });
-      } else if (error.response?.status === 500) {
-        setErrors({
-          submit:
-            error.response.data?.error || t("error.connection.serverError"),
-        });
-      } else if (!error.response) {
-        setErrors({ submit: t("error.connection.noResponse") });
-      } else {
-        setErrors({
-          submit: error.message || t("error.connection.unexpected"),
-        });
-      }
+      console.error("Form submission error:", error);
+      // Get the error message directly from the API response
+      const errorMessage = error|| error.message;
+      setErrors({ submit: errorMessage });
     } finally {
       setIsSubmitting(false);
     }
   };
+  // console.log(errors ,"errortest");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -124,8 +107,7 @@ export default function CreateUser() {
                   {t("user.back")}
                 </Button>
               </div>
-
-              {/* Show general submission error if any */}
+              {/* Show API error message */}
               {errors.submit && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
                   <div className="flex">
@@ -190,14 +172,57 @@ export default function CreateUser() {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("user.modal.form.phone.label")}
+                  </label>
+                  <input
+                    name="phone"
+                    type="tel"
+                    className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-[#4f772d] focus:border-[#4f772d] ${
+                      errors.phone ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder={t("user.modal.form.phone.placeholder")}
+                    value={form.phone}
+                    onChange={handleChange}
+                  />
+                  {errors.phone && (
+                    <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("user.modal.form.gender.label")}
+                  </label>
+                  <select
+                    name="gender"
+                    className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-[#4f772d] focus:border-[#4f772d] ${
+                      errors.gender ? "border-red-500" : "border-gray-300"
+                    }`}
+                    value={form.gender}
+                    onChange={handleChange}
+                  >
+                    <option value="male">
+                      {t("user.modal.form.gender.options.male")}
+                    </option>
+                    <option value="female">
+                      {t("user.modal.form.gender.options.female")}
+                    </option>
+                  </select>
+                  {errors.gender && (
+                    <p className="mt-1 text-sm text-red-600">{errors.gender}</p>
+                  )}
+                </div>
+
+                <div>
                   <Button
                     type="submit"
                     className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4f772d] hover:bg-[#456528] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4f772d]"
                     disabled={isSubmitting}
                   >
                     {isSubmitting
-                      ? t("user.modal.form.submit.loading")
-                      : t("user.modal.form.submit.label")}
+                      ? t("user.button.loading.create")
+                      : t("user.button.create")}
                   </Button>
                 </div>
               </form>
