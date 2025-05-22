@@ -34,29 +34,18 @@ i18n: next-i18next
 
 📦 Getting Started
 1️⃣ Clone the Repository
-bash
-Copy
-Edit
+
 git clone https://github.com/Emanmohamedawad/DoDeal-admin-dashboard.git
 
 2️⃣ Install Dependencies
 Using npm:
 
-bash
-Copy
-Edit
 npm install
-Or using yarn:
 
-bash
-Copy
-Edit
-yarn install
 3️⃣ Run the Development Server
-bash
-Copy
-Edit
+
 npm run dev
+
 Then open http://localhost:3000 in your browser.
 
 🧪 Scripts
